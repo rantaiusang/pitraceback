@@ -3,6 +3,16 @@ import Product from '../models/Product.js';
 import { authenticateToken, hasPermission, apiRateLimiter } from '../lib/auth.js';
 
 export default async function handler(req, res) {
+    // Enable CORS
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    
+    // Handle preflight request
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+
     await dbConnect();
 
     const { method } = req;
