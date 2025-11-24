@@ -4,6 +4,16 @@ import Product from '../models/Product.js';
 import { authenticateToken, apiRateLimiter } from '../lib/auth.js';
 
 export default async function handler(req, res) {
+    // Enable CORS
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    
+    // Handle preflight request
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+
     await dbConnect();
 
     const { method } = req;
@@ -100,11 +110,6 @@ async function handleCreatePayment(req, res) {
 
         // Create payment in database
         const payment = await Payment.create(paymentData);
-
-        // For Pi Network integration, you would typically:
-        // 1. Create payment in Pi Network
-        // 2. Update payment with Pi Network identifier
-        // 3. Return payment data to frontend
 
         return res.status(201).json({ 
             success: true, 
@@ -247,11 +252,6 @@ async function handleUpdatePayment(req, res) {
 
         await payment.save();
 
-        // Here you would typically:
-        // 1. Send webhook to callback URL if provided
-        // 2. Update related product/service status
-        // 3. Send notification to user
-
         return res.status(200).json({
             success: true,
             data: payment.toPaymentResponse(),
@@ -301,12 +301,3 @@ function getServiceFeatures(serviceType) {
     };
     return features[serviceType] || ['Basic features'];
 }
-
-// Additional endpoint for payment webhooks (Pi Network callbacks)
-export const config = {
-    api: {
-        bodyParser: {
-            sizeLimit: '1mb',
-        },
-    },
-};
