@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "name": "pi-trace-backend",
   "builds": [
     {
       "src": "api/**/*.js",
